@@ -93,8 +93,10 @@ installation, the controls, interpretation, and the reactive path from an input
 to a displayed result. Reference help is available with `?launch_app`,
 `?summarise_development`, and `?gapminder_data`.
 
-The pkgdown site is prepared for local preview. Its public URL will be added
-here after publication has been verified. To build and preview it locally:
+[Documentation website](https://etc5523-2026.github.io/etc5523-assignment-4-min-1303/) (first publication pending).
+
+The website is built and published by GitHub Actions after each push to main.
+To build and preview it locally:
 
 ```r
 pkgdown::build_site()
