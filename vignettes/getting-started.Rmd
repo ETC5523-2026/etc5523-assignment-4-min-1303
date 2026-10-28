@@ -1,0 +1,146 @@
+---
+title: "Explore income and life expectancy"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Explore income and life expectancy}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(dataExplorer)
+```
+
+## Who is this for?
+
+This app is for students exploring global development. It helps investigate:
+**How does the relationship between income and life expectancy vary across
+continents and years?**
+
+The app uses the packaged `gapminder_data`: 142 countries observed at five-year
+intervals from 1952 to 2007. No external data file or download is needed when
+the app runs.
+
+## Install and launch
+
+Install from GitHub in an R session:
+
+```{r installation, eval=FALSE}
+install.packages("remotes") # If needed
+remotes::install_github("ETC5523-2026/etc5523-assignment-4-min-1303")
+```
+
+Then launch the app:
+
+```{r launch, eval=FALSE}
+library(dataExplorer)
+launch_app(launch.browser = TRUE)
+```
+
+The interactive app runs until you stop it. Use RStudio's Stop button or Escape
+in the console to return to R. When developing from the cloned project, run
+`devtools::load_all()` before `launch_app()`.
+
+## Understand the data
+
+```{r data-fields}
+head(gapminder_data, 3)
+```
+
+Each row represents a country in a year:
+
+| Field | Meaning |
+|:--|:--|
+| `country` | Country name |
+| `continent` | Continent grouping in the source dataset |
+| `year` | Observation year |
+| `lifeExp` | Life expectancy at birth, in years |
+| `pop` | Total population |
+| `gdpPercap` | GDP per capita, adjusted for purchasing power |
+
+GDP per capita measures economic output per person, not a person's salary.
+Population is included in the data but is not used to weight the app's medians
+or the size of the plotted points.
+
+## Follow an exploration
+
+1. Start with all continents and **2007**. In the first plot, each country is a
+   point. A point further right has higher GDP per capita; a point higher up
+   has longer life expectancy. Colours and shapes identify continents. The
+   income axis is logarithmic, so equal distances correspond to equal ratios.
+2. Select only **Asia**. Look at the spread of its countries and the summary
+   table. The table is calculated with `summarise_development()`.
+3. Change the year to **1952**, then return to **2007**. Both axes stay fixed to
+   make comparisons across selections easier. Check whether countries move
+   into a different part of the income/life-expectancy space.
+4. Look at the trend chart. It keeps the full time period and shows each selected
+   continent's median country life expectancy. The dashed line follows the
+   selected year. Add Europe or Africa to compare trajectories.
+
+The app's table uses an exported function that can also be called directly:
+
+```{r asia-summary}
+asia_1952 <- summarise_development(1952, "Asia")
+asia_2007 <- summarise_development(2007, "Asia")
+comparison <- rbind(asia_1952, asia_2007)
+knitr::kable(comparison, digits = 1)
+```
+
+For the `r asia_2007$countries` Asian countries represented, median country life
+expectancy increased from `r round(asia_1952$median_life_exp, 1)` years in 1952 to
+`r round(asia_2007$median_life_exp, 1)` years in 2007, a difference of
+`r round(asia_2007$median_life_exp - asia_1952$median_life_exp, 1)` years.
+Median GDP per capita also increased, from approximately
+`r format(round(asia_1952$median_gdp_per_capita), big.mark = ",")` to
+`r format(round(asia_2007$median_gdp_per_capita), big.mark = ",")` in the source
+data's purchasing-power-adjusted units.
+
+These summaries suggest that the typical country in this group had both higher
+income and longer life expectancy by 2007. They do not describe every country,
+and the two medians need not refer to the same country. Return to the scatter
+plot to inspect the variation that these summaries conceal. This comparison
+does not establish that higher income caused longer life expectancy.
+
+## Try an empty or weak selection
+
+Clear every checkbox under **Compare continents**. The app displays
+"Select at least one continent to explore the data." rather than a misleading
+empty chart or a technical error. Select Asia again to restore the outputs.
+
+Select only **Oceania** to see another limitation: this dataset contains just
+Australia and New Zealand for that continent. The app explains this beside the
+snapshot, so the results should not be generalised to the whole region.
+
+## Trace an input to an output
+
+The app source is `inst/shiny/app.R`. Its year input has the identifier `year`.
+Inside `server()`:
+
+1. `selected_year()` converts `input$year` to a number and validates it against
+   the available observation years.
+2. `selected_continents()` validates `input$continents`, including the empty
+   selection case.
+3. `snapshot()` filters the packaged data using those two reactive values.
+4. `output$comparison` uses `renderPlot()` to plot the filtered rows.
+
+Changing a year invalidates the dependent reactive values and redraws the
+snapshot. The separate `development_summary()` reactive calls the exported
+`summarise_development()` function for each selected continent; its results feed
+`output$summary`. The trend chart uses all years for the selected continents,
+while its marker follows the chosen year.
+
+## Limitations and attribution
+
+These are historical country-level summaries, not estimates of present-day
+conditions. Country medians weight each country equally rather than each
+person equally. Country averages can hide inequalities within countries, and
+continent summaries can hide substantial differences between countries.
+
+The data are redistributed from Jennifer Bryan's
+[gapminder R package](https://jennybc.github.io/gapminder/), version 1.0.1,
+distributed under CC0, and originate from
+[Gapminder](https://www.gapminder.org/data/).
+The reproducible preparation script is `data-raw/gapminder_data.R`: it converts
+`gapminder::gapminder` to a base data frame and saves the packaged dataset.
+The repository README records the generative AI assistance used in this project.

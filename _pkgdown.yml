@@ -1,0 +1,24 @@
+template:
+  bootstrap: 5
+  bslib:
+    primary: "#123c52"
+
+# All essential links and attribution are in the README. Disabling the
+# optional sidebar also avoids CRAN/Bioconductor availability lookups.
+home:
+  sidebar: false
+
+reference:
+  - title: Explore development
+    contents:
+      - launch_app
+      - summarise_development
+  - title: Included data
+    contents:
+      - gapminder_data
+
+articles:
+  - title: Get started
+    navbar: ~
+    contents:
+      - getting-started

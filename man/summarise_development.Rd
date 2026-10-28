@@ -7,18 +7,22 @@
 summarise_development(year = 2007, continent = "All")
 }
 \arguments{
-\item{year}{Year to analyse. Default is 2007.}
+\item{year}{Observation year to analyse, from 1952 to 2007 in five-year
+intervals. Default is 2007.}
 
-\item{continent}{Continent to analyse, or "All".}
+\item{continent}{Continent to analyse ("Africa", "Americas", "Asia",
+"Europe", or "Oceania"), or "All" for all countries.}
 }
 \value{
-A data frame containing the number of
-countries, median life expectancy, and median
-GDP per capita.
+A one-row data frame with columns \code{year}, \code{continent}, \code{countries}
+(number of distinct countries), \code{median_life_exp} (years), and
+\code{median_gdp_per_capita} (in the source data's purchasing-power-adjusted
+units). Throws an error when the selection contains no observations.
 }
 \description{
-Calculates development statistics for a selected
-year and continent using the packaged Gapminder data.
+Calculates development statistics for a selected year and continent using
+the packaged Gapminder data. Medians give every country equal weight and
+are not population-weighted averages.
 }
 \examples{
 summarise_development(2007, "Asia")
