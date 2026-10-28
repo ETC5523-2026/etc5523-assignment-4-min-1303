@@ -1,14 +1,22 @@
 Package: dataExplorer
-Title: What the Package Does (One Line, Title Case)
+Title: Explore Historical Development with Gapminder
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+Authors@R:
+    person("Min Khant", "Aung", email = "maun0006@student.monash.edu",
+           role = c("aut", "cre"))
+Description: Explore historical differences in income and life expectancy
+    using a packaged Gapminder dataset. Provides country-level summaries
+    and an interactive Shiny application for comparing continents and years
+    from 1952 to 2007.
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-Depends: 
+Depends:
     R (>= 3.5)
+Imports:
+    shiny
+Suggests:
+    testthat (>= 3.0.0)
 LazyData: true
+Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.1
