@@ -45,6 +45,7 @@ ui <- fluidPage(
       div(class = "panel-content",
         h2(textOutput("snapshot_title", inline = TRUE)),
         plotOutput("comparison", height = "360px"),
+        plotOutput("comparison_legend", height = "70px"),
         p(class = "hint", "Each point is one country. Colour and shape identify its continent. Further right means higher GDP per capita; higher up means longer life expectancy. The income axis is logarithmic: equal distances represent equal ratios."),
         textOutput("coverage")
       ),
@@ -56,6 +57,7 @@ ui <- fluidPage(
       div(class = "panel-content",
         h2("How life expectancy changed"),
         plotOutput("trend", height = "320px"),
+        plotOutput("trend_legend", height = "70px"),
         p(class = "hint", "Lines show the median country life expectancy within each selected continent. The dashed vertical line marks your chosen year. Compare the trajectories, then use the snapshot to inspect variation between countries."),
         p(class = "hint", "An association between income and life expectancy does not show that income caused the difference. These historical country averages also hide inequalities within countries.")
       )
@@ -92,6 +94,21 @@ server <- function(input, output, session) {
     }))
   })
 
+  # Keep identical legends in their own rows, outside both data panels.
+  continent_legend <- function() {
+    renderPlot({
+      req(length(input$continents) > 0)
+      chosen <- selected_continents()
+      par(mar = c(0, 0, 0, 0))
+      plot.new()
+      legend("center", legend = chosen, col = continent_colours[chosen],
+             pch = continent_shapes[chosen], bty = "n",
+             ncol = min(3, length(chosen)), cex = 0.9)
+    }, res = 96)
+  }
+  output$comparison_legend <- continent_legend()
+  output$trend_legend <- continent_legend()
+
   output$snapshot_title <- renderText(paste("Income and life expectancy in", selected_year()))
   output$comparison <- renderPlot({
     d <- snapshot()
@@ -102,9 +119,6 @@ server <- function(input, output, session) {
          col = continent_colours[group], pch = continent_shapes[group],
          cex = 1.1, xlab = "GDP per capita (purchasing-power adjusted; log scale)",
          ylab = "Life expectancy at birth (years)")
-    legend("topleft", legend = selected_continents(),
-           col = continent_colours[selected_continents()],
-           pch = continent_shapes[selected_continents()], bty = "n", cex = 0.85)
   }, res = 96)
 
   output$coverage <- renderText({
@@ -139,8 +153,6 @@ server <- function(input, output, session) {
       lines(years, medians, type = "b", lwd = 2,
             col = continent_colours[continent], pch = continent_shapes[continent])
     }
-    legend("topleft", legend = chosen, col = continent_colours[chosen],
-           pch = continent_shapes[chosen], lty = 1, bty = "n", cex = 0.85)
   }, res = 96)
 }
 
